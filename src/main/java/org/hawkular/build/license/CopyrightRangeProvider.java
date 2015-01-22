@@ -71,6 +71,8 @@ public class CopyrightRangeProvider implements PropertiesProvider {
      */
     public Map<String, String> getAdditionalProperties(AbstractLicenseMojo mojo, Properties properties,
             Document document) {
+        Thread t = Thread.currentThread();
+        System.out.println("getAdditionalProperties in thread "+ t.getName() +" ("+ t.getId() +") for file "+ document.getFile().getAbsolutePath());
         String inceptionYear = properties.getProperty(INCEPTION_YEAR_KEY);
         if (inceptionYear == null) {
             throw new RuntimeException("'project.inceptionYear' must have a value for file "
@@ -96,12 +98,18 @@ public class CopyrightRangeProvider implements PropertiesProvider {
             result.put(COPYRIGHT_YEARS_KEY, copyrightYears);
             return Collections.unmodifiableMap(result);
         } catch (NoHeadException e) {
+            System.out.println("error on file "+ document.getFile().getAbsolutePath());
+            e.printStackTrace();
             throw new RuntimeException("Could not compute the year of the last git commit for file "
                     + document.getFile().getAbsolutePath(), e);
         } catch (GitAPIException e) {
+            System.out.println("error on file "+ document.getFile().getAbsolutePath());
+            e.printStackTrace();
             throw new RuntimeException("Could not compute the year of the last git commit for file "
                     + document.getFile().getAbsolutePath(), e);
         } catch (IOException e) {
+            System.out.println("error on file "+ document.getFile().getAbsolutePath());
+            e.printStackTrace();
             throw new RuntimeException("Could not compute the year of the last git commit for file "
                     + document.getFile().getAbsolutePath(), e);
         }
@@ -119,6 +127,7 @@ public class CopyrightRangeProvider implements PropertiesProvider {
         if (gitLookup == null) {
             synchronized (this) {
                 if (gitLookup == null) {
+                    Thread t = Thread.currentThread();
                     String dateSourceString = props.getProperty(COPYRIGHT_LAST_YEAR_SOURCE_KEY,
                             DateSource.AUTHOR.name());
                     DateSource dateSource = DateSource.valueOf(dateSourceString.toUpperCase(Locale.US));
@@ -145,6 +154,7 @@ public class CopyrightRangeProvider implements PropertiesProvider {
                     default:
                         throw new IllegalStateException("Unexpected " + DateSource.class.getName() + " " + dateSource);
                     }
+                    System.out.println("initializing gitLookup in thread "+ t.getName() +" ("+ t.getId() +")");
                     gitLookup = new GitLookup(file, dateSource, timeZone, checkCommitsCount);
                 }
             }
