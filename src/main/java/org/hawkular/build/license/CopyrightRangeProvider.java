@@ -97,18 +97,8 @@ public class CopyrightRangeProvider implements PropertiesProvider {
             }
             result.put(COPYRIGHT_YEARS_KEY, copyrightYears);
             return Collections.unmodifiableMap(result);
-        } catch (NoHeadException e) {
-            System.out.println("error on file "+ document.getFile().getAbsolutePath());
-            e.printStackTrace();
-            throw new RuntimeException("Could not compute the year of the last git commit for file "
-                    + document.getFile().getAbsolutePath(), e);
-        } catch (GitAPIException e) {
-            System.out.println("error on file "+ document.getFile().getAbsolutePath());
-            e.printStackTrace();
-            throw new RuntimeException("Could not compute the year of the last git commit for file "
-                    + document.getFile().getAbsolutePath(), e);
-        } catch (IOException e) {
-            System.out.println("error on file "+ document.getFile().getAbsolutePath());
+        } catch (Exception e) {
+            System.out.println("error in thread "+ t.getName() +" ("+ t.getId() +") on file "+ document.getFile().getAbsolutePath());
             e.printStackTrace();
             throw new RuntimeException("Could not compute the year of the last git commit for file "
                     + document.getFile().getAbsolutePath(), e);
